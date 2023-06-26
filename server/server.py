@@ -5,6 +5,7 @@ import io
 import os
 import random
 import string
+import re
 
 app = Flask(__name__)
 CORS(app)
@@ -19,12 +20,16 @@ def preprocess_excel():
     file = request.files['file']
 
     # Check if the file is of the allowed type
-    allowed_extensions = {'xlsx', 'xls'}
+    allowed_extensions = {'xlsx', 'xls', 'csv'}
     if file.filename.split('.')[-1].lower() not in allowed_extensions:
         return jsonify({'error': 'Invalid file type'})
 
-    # Read the Excel file into a DataFrame
-    df = pd.read_excel(file)
+    # Read the Excel or csv file into a DataFrame
+    if file.filename.split('.')[-1].lower() == 'csv':
+        df = pd.read_csv(file)
+    else:
+        df = pd.read_excel(file)
+
 
     # Preprocess the data (filter rows based on a condition)
     # filtered_data = df[df['Age'] >= 26]
@@ -35,49 +40,57 @@ def preprocess_excel():
     # Save the filtered data to an Excel file
     filtered_df.to_excel('processed_data.xlsx', index=False)
 
-    # Set the appropriate file headers
-    headers = {
-        'Content-Disposition': 'attachment; filename=processed_data.xlsx',
-        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    }
+  
 
-    # Generate a random download token
-    download_token = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
-    filtered_df.to_excel(f'temp_processed_data.xlsx', index=False)
- 
-
-    
-
-    # Return the file path for download link
-    download_link = f'/api/download/temp'
-    return jsonify({'filteredData': filtered_data.to_dict('records'), 'downloadLink': download_link})
+    return jsonify({})
 
 
 @app.route('/api/query', methods=['GET'])
 def query():
     # get text input from user 
-    query = request.args.get('query')
-    print(query)
+    input_text = request.args.get('query')
+    query1 = input_text.split(",")
+    query2 = [x.split('\n') for x in query1]
+    query = [item.strip() for sublist in query2 for item in sublist if item.strip() != '']
+
+   
     # read the excel file
-    df = pd.read_excel('processed_data.xlsx')
+    companydf = pd.read_csv('./server/company_filled_final_csv.csv')
+
+    pattern = '|'.join([re.escape(q) for q in query])
+    filtered_df_ = companydf[companydf['Company name'].str.contains(pattern, case=False, regex=True)].reset_index()
+
     # filter the data based on the query
-    filtered_data = df[df['Name'].str.contains(query, case=False)]
     # return the filtered data as a JSON response
-    temp_file_path = f'temp_processed_data.xlsx'
-    filtered_data.to_excel(temp_file_path, index=False)
-    return jsonify({'filteredData': filtered_data.to_dict('records')})
+    temp_file_path = f'server/temp_processed_company_data.csv'
+    filtered_df_.to_csv(temp_file_path, index=False)
+    
+
+    filtered_company_names = set(filtered_df_['Company name'])
+    pattern = '|'.join([re.escape(name) for name in filtered_company_names])
+    not_included_company_names = [name for name in query if not re.search(pattern, name, re.IGNORECASE)]
+
+    neededcolumns = ['Company name', 'City', 'Company Domain Name']  # Replace with your desired column names
+
+    filtered_df = filtered_df_[neededcolumns].copy()
+    if query=="":
+            print(query, "\n\nEmpty\n")
+            filtered_df = pd.DataFrame()
+            not_included_company_names = []
+    return jsonify({'filteredData': filtered_df.to_dict('records'), 'companyNotIncluded' : not_included_company_names})
 
 
 # Define a route for downloading the processed Excel file
-@app.route('/api/download/<token>', methods=['GET'])
-def download_excel(token):
-    temp_file_path = f'temp_processed_data.xlsx'
+@app.route('/api/download', methods=['GET'])
+def download_excel():
+    temp_file_path = r'./server/temp_processed_company_data.csv'
     print(temp_file_path)
     if os.path.exists(temp_file_path):
         print('file exists')
-        return send_file(temp_file_path, as_attachment=True)
+        return send_file('temp_processed_company_data.csv',
+                         as_attachment=True)
 
-    return jsonify({'error': 'File not found'})
+    return jsonify({'error': 'File not found!!'})
 
 
 # Run the server
