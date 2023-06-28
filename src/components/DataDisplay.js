@@ -1,18 +1,18 @@
 import React from 'react'
 
-const DataDisplay = ({ filteredData, handleDownload }) => {
+const DataDisplay = ({ filteredData, handleCompanyDownload }) => {
   const columnOrder = ['Company name', 'City', 'Company Domain Name']
 
   return (
     <div className='relative'>
       <div className='relative'>
         <h3 className='text-2xl font-bold mt-5 text-darkgreen-600 py-2'>
-          Filtered data
+          Filtered Company data
         </h3>
 
         <button
           className='absolute top-2 right-2 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition-all duration-300'
-          onClick={handleDownload}
+          onClick={handleCompanyDownload}
         >
           Export
         </button>

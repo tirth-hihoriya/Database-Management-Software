@@ -3,10 +3,10 @@ import React from 'react'
 const CompanyList = ({ companynotIncluded, copyAllToClipboard }) => {
   return (
     <div className='mt-6'>
-      <div class='flex items-center justify-between'>
-        <h5 class='mb-3'>List of companies not in our database</h5>
+      <div className='flex items-center justify-between'>
+        <h5 className='mb-3'>List of companies not in COMPANY database</h5>
         <button
-          class='bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded'
+          className='bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded'
           onClick={copyAllToClipboard}
         >
           Copy All
