@@ -88,6 +88,21 @@ const FileUpload = () => {
       })
   }
 
+  const handleTextAreaPlaceholder = () => {
+    switch (selectedCategory) {
+      case 'companyName':
+        return 'Enter list of company names';
+      case 'industry':
+        return 'Enter industry name (e.g. Fin Tech, Real Estate, Health, Blockchain/Crypto, etc.)';
+      case 'type':
+        return 'Enter company type (e.g. Venture Capital, Multi Family Office, Corporation, etc.)';
+      default:
+        return '';
+    }
+  };
+  
+
+
   const handleTextInput = () => {
     axios
       .get('http://localhost:5000/api/query', { params: { query, selectedCategory } })
@@ -126,7 +141,7 @@ const FileUpload = () => {
           handleTextChange={handleTextChange}
           handleTextInput={handleTextInput}
           query={query}
-      
+          handleTextAreaPlaceholder = {handleTextAreaPlaceholder}
           handleSelectChange={handleSelectChange}
 
         />

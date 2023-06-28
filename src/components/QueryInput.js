@@ -4,7 +4,8 @@ const QueryInput = ({
   handleTextChange,
   handleTextInput,
   query,
-  handleSelectChange
+  handleSelectChange,
+  handleTextAreaPlaceholder
 }) => {
   return (
     <div className='mt-4'>
@@ -17,9 +18,7 @@ const QueryInput = ({
           className={`block border border-gray-300 rounded py-2 px-4 w-full mb-2 focus:outline-none focus:border-blue-500`}
           onChange={handleSelectChange}
         >
-          <option value='' disabled>
-            Search by
-          </option>
+          <option value='' className="text-gray-400"> select dropdown  </option>
           <option value='companyName'>Company Name</option>
           <option value='industry'>Industry</option>
           <option value='type'>Type category</option>
@@ -29,7 +28,7 @@ const QueryInput = ({
         </label>
         <textarea
           className='block border border-gray-300 rounded py-2 px-4 w-full mb-2 h-32'
-          placeholder='Enter query'
+          placeholder={handleTextAreaPlaceholder()}
           onChange={handleTextChange}
           value={query}
         ></textarea>

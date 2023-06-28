@@ -44,18 +44,18 @@ def search_query(query, selectedCategory):
             'companyNotIncludedInContacts': []
         })
     else:
-        if selectedCategory == 'Company Name':
+        if selectedCategory == 'companyName':
             return query_company(query, file_paths)
-        elif selectedCategory == 'Industry':
+        elif selectedCategory == 'industry':
             return query_industry(query, file_paths)
-        elif selectedCategory == 'Type category':
+        elif selectedCategory == 'type':
             return query_type(query, file_paths)
-    return jsonify({
+    return {
         'filteredData': pd.DataFrame(),
         'filteredContactsData': pd.DataFrame(),
         'companyNotIncluded': [],
         'companyNotIncludedInContacts': []
-    })
+    }
 
 
 def query_company(query, file_paths):
@@ -72,10 +72,15 @@ def query_company(query, file_paths):
     """
     companydf = pd.read_csv(file_paths['company_data_path'])
     contactsdf = pd.read_csv(file_paths['contacts_data_path'])
+    contactsdf['Associated Company IDs'] = pd.to_numeric(contactsdf['Associated Company IDs'], errors='coerce').astype('Int64')
+    companydf['Record ID'] = pd.to_numeric(companydf['Record ID'], errors='coerce').astype('Int64')
 
     pattern = '|'.join([re.escape(q) for q in query])
     filteredCompanies_df = companydf[companydf['Company name'].str.contains(pattern, case=False, regex=True)].reset_index()
-    filteredContacts_df = contactsdf[contactsdf['Company Name'].str.contains(pattern, case=False, regex=True)].reset_index()
+    record_ids = filteredCompanies_df['Record ID'].tolist()
+
+    filteredContacts_df = contactsdf[contactsdf['Associated Company IDs'].isin(record_ids)]
+    # filteredContacts_df = contactsdf[contactsdf['Company Name'].str.contains(pattern, case=False, regex=True)].reset_index()
 
     filteredCompanies_df.to_csv(file_paths['temp_company_file_path'], index=False)
     filteredContacts_df.to_csv(file_paths['temp_contacts_file_path'], index=False)
@@ -97,6 +102,7 @@ def query_company(query, file_paths):
     })
 
 def query_industry(query, file_paths):
+    print("\n--->>>query_industry")
     """
     Performs a query based on industry.
 
@@ -109,6 +115,9 @@ def query_industry(query, file_paths):
                         company names not included, and company names not included in contacts.
     """
     companydf = pd.read_csv(file_paths['company_data_path'])
+    contactsdf = pd.read_csv(file_paths['contacts_data_path'])
+    contactsdf['Associated Company IDs'] = pd.to_numeric(contactsdf['Associated Company IDs'], errors='coerce').astype('Int64')
+    companydf['Record ID'] = pd.to_numeric(companydf['Record ID'], errors='coerce').astype('Int64')
 
     # Create a pattern to match any of the query words
     pattern = '|'.join([re.escape(q) for q in query])
@@ -124,7 +133,7 @@ def query_industry(query, file_paths):
         return False
 
     # Filter the company DataFrame based on the specified columns and the query pattern
-    filtered_df = companydf[
+    filteredCompanies_df = companydf[
         companydf['CB 1st Priority'].str.contains(pattern, case=False, na=False, regex=True) |
         companydf['CB 2nd Priority'].str.contains(pattern, case=False, na=False, regex=True) |
         companydf['Industry'].str.contains(pattern, case=False, na=False, regex=True) |
@@ -132,9 +141,25 @@ def query_industry(query, file_paths):
         companydf['CB Industry Groups'].apply(match_comma_separated)
     ]
 
+    record_ids = filteredCompanies_df['Record ID'].tolist()
+
+    filteredContacts_df = contactsdf[contactsdf['Associated Company IDs'].isin(record_ids)]
+    
+    filteredCompanies_df.to_csv(file_paths['temp_company_file_path'], index=False)
+    filteredContacts_df.to_csv(file_paths['temp_contacts_file_path'], index=False)
+
+    filtered_company_names = set(filteredCompanies_df['Company name'])
+    filtered_company_names_inContacts = set(filteredContacts_df['Company Name'])
+
+    pattern1 = '|'.join([re.escape(name) for name in filtered_company_names])
+    not_included_company_names = [name for name in query if not re.search(pattern1, name, re.IGNORECASE)]
+
+    pattern2 = '|'.join([re.escape(name) for name in filtered_company_names_inContacts])
+    not_included_company_names_inContacts = [name for name in query if not re.search(pattern2, name, re.IGNORECASE)]
+
     return jsonify({
-        'filteredData': filtered_df.to_dict('records'),
-        'filteredContactsData': pd.DataFrame(),
+        'filteredData': filteredCompanies_df.to_dict('records'),
+        'filteredContactsData': filteredContacts_df.to_dict('records'),
         'companyNotIncluded': [],
         'companyNotIncludedInContacts': []
     })
@@ -153,4 +178,39 @@ def query_type(query, file_paths):
         flask.Response: A JSON response containing the filtered data, filtered contacts data,
                         company names not included, and company names not included in contacts.
     """
-    pass
+
+    companydf = pd.read_csv(file_paths['company_data_path'])
+    contactsdf = pd.read_csv(file_paths['contacts_data_path'])
+    contactsdf['Associated Company IDs'] = pd.to_numeric(contactsdf['Associated Company IDs'], errors='coerce').astype('Int64')
+    companydf['Record ID'] = pd.to_numeric(companydf['Record ID'], errors='coerce').astype('Int64')
+
+    # Create a pattern to match any of the query words
+    pattern = '|'.join([re.escape(q) for q in query])
+
+    # Function to check if any query word matches the values in a comma-separated field
+    filteredCompanies_df = companydf[companydf['CB Investor Type'].str.contains(pattern, case=False, regex=True)].reset_index()
+
+
+    record_ids = filteredCompanies_df['Record ID'].tolist()
+
+    filteredContacts_df = contactsdf[contactsdf['Associated Company IDs'].isin(record_ids)]
+    
+    filteredCompanies_df.to_csv(file_paths['temp_company_file_path'], index=False)
+    filteredContacts_df.to_csv(file_paths['temp_contacts_file_path'], index=False)
+
+    filtered_company_names = set(filteredCompanies_df['Company name'])
+    filtered_company_names_inContacts = set(filteredContacts_df['Company Name'])
+
+    pattern1 = '|'.join([re.escape(name) for name in filtered_company_names])
+    not_included_company_names = [name for name in query if not re.search(pattern1, name, re.IGNORECASE)]
+
+    pattern2 = '|'.join([re.escape(name) for name in filtered_company_names_inContacts])
+    not_included_company_names_inContacts = [name for name in query if not re.search(pattern2, name, re.IGNORECASE)]
+
+
+    return jsonify({
+        'filteredData': filteredCompanies_df.to_dict('records'),
+        'filteredContactsData': filteredContacts_df.to_dict('records'),
+        'companyNotIncluded': [],
+        'companyNotIncludedInContacts': []
+    })
