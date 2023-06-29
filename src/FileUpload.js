@@ -17,7 +17,6 @@ const FileUpload = () => {
   const [query, setQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
 
-
   const handleFileChange = event => {
     setSelectedFile(event.target.files[0])
   }
@@ -41,7 +40,9 @@ const FileUpload = () => {
   const handleCompanyDownload = () => {
     if (downloadLink) {
       axios
-        .get('http://localhost:5000' + downloadLink+ '/company', { responseType: 'blob' })
+        .get('http://localhost:5000' + downloadLink + '/company', {
+          responseType: 'blob'
+        })
         .then(response => {
           const url = window.URL.createObjectURL(new Blob([response.data]))
           const link = document.createElement('a')
@@ -60,7 +61,9 @@ const FileUpload = () => {
   const handleContactsDownload = () => {
     if (downloadLink) {
       axios
-        .get('http://localhost:5000' + downloadLink+ '/contacts', { responseType: 'blob' })
+        .get('http://localhost:5000' + downloadLink + '/contacts', {
+          responseType: 'blob'
+        })
         .then(response => {
           const url = window.URL.createObjectURL(new Blob([response.data]))
           const link = document.createElement('a')
@@ -91,28 +94,26 @@ const FileUpload = () => {
   const handleTextAreaPlaceholder = () => {
     switch (selectedCategory) {
       case 'companyName':
-        return 'Enter list of company names';
+        return 'Enter list of company names'
       case 'industry':
-        return 'Enter industry name (e.g. Fin Tech, Real Estate, Health, Blockchain/Crypto, etc.)';
+        return 'Enter industry name (e.g. Fin Tech, Real Estate, Health, Blockchain/Crypto, etc.)'
       case 'type':
-        return 'Enter company type (e.g. Venture Capital, Multi Family Office, Corporation, etc.)';
+        return 'Enter company type (e.g. Venture Capital, Multi Family Office, Corporation, etc.)'
       default:
-        return '';
+        return ''
     }
-  };
-  
-
+  }
 
   const handleTextInput = () => {
     axios
-      .get('http://localhost:5000/api/query', { params: { query, selectedCategory } })
+      .get('http://localhost:5000/api/query', {
+        params: { query, selectedCategory }
+      })
       .then(response => {
         setFilteredData(response.data.filteredData)
         setFilteredConstactsData(response.data.filteredContactsData)
         setCompanynotIncluded(response.data.companyNotIncluded)
-        setCompanynotInContacts(
-          response.data.companyNotIncludedInContacts
-        )
+        setCompanynotInContacts(response.data.companyNotIncludedInContacts)
         setDownloadLink('/api/download')
       })
       .catch(error => {
@@ -129,21 +130,22 @@ const FileUpload = () => {
 
   return (
     <div className='flex items justify-center min-h-screen bg-gray-100'>
-      <div className='max-w-3xl w-full m-4 p-6 bg-white shadow-lg rounded-lg'>
+      <div className='max-w-4xl w-full m-4 p-6 bg-white shadow-lg rounded-lg'>
+        {/*
         <h3 className='text-2xl font-semibold mb-4'>File Upload</h3>
         <FileInput
           handleFileChange={handleFileChange}
           handleUpload={handleUpload}
           selectedFile={selectedFile}
         />
+        */}
 
         <QueryInput
           handleTextChange={handleTextChange}
           handleTextInput={handleTextInput}
           query={query}
-          handleTextAreaPlaceholder = {handleTextAreaPlaceholder}
+          handleTextAreaPlaceholder={handleTextAreaPlaceholder}
           handleSelectChange={handleSelectChange}
-
         />
 
         {filteredData && filteredData.length > 0 ? (
@@ -164,24 +166,23 @@ const FileUpload = () => {
           <p className='mt-4'>No data available</p>
         )}
       </div>
-      <div className='max-w-2xl m-4 w-full p-6 bg-white shadow-lg rounded-lg'>
+      <div className='max-w-xl m-4 w-full p-6 bg-white shadow-lg rounded-lg'>
         {companynotIncluded && companynotIncluded.length > 0 ? (
           <CompanyList
             companynotIncluded={companynotIncluded}
             copyAllToClipboard={copyAllToClipboard}
           />
         ) : (
-          <p className='mt-4'>All included</p>
+          <p className='mt-4'>Null</p>
         )}
 
-        {companynotInContacts &&
-        companynotInContacts.length > 0 ? (
+        {companynotInContacts && companynotInContacts.length > 0 ? (
           <ContactsCompanyList
             companynotInContacts={companynotInContacts}
             copyAllToClipboard={copyAllToClipboard}
           />
         ) : (
-          <p className='mt-4'>All included</p>
+          <p className='mt-4'>Null</p>
         )}
       </div>
     </div>

@@ -102,7 +102,6 @@ def query_company(query, file_paths):
     })
 
 def query_industry(query, file_paths):
-    print("\n--->>>query_industry")
     """
     Performs a query based on industry.
 

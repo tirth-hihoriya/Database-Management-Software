@@ -7,7 +7,7 @@ const DataDisplay = ({ filteredData, handleCompanyDownload }) => {
     <div className='relative'>
       <div className='relative'>
         <h3 className='text-2xl font-bold mt-5 text-darkgreen-600 py-2'>
-          Filtered Company data
+          Filtered Company data ({filteredData.length})
         </h3>
 
         <button

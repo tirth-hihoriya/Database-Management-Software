@@ -1,14 +1,13 @@
 import React from 'react'
 
-
 const ContactsDisplay = ({ filteredConstactsData, handleContactsDownload }) => {
-  const columnOrder = ['First Name', 'Last Name', 'Email', 'Company Name', ]
+  const columnOrder = ['First Name', 'Last Name', 'Email', 'Company Name']
 
   return (
     <div className='relative'>
       <div className='relative'>
         <h3 className='text-2xl font-bold mt-5 text-darkgreen-600 py-2'>
-          Filtered Contacts data
+          Filtered Contacts data ({filteredConstactsData.length})
         </h3>
 
         <button
@@ -59,4 +58,4 @@ const ContactsDisplay = ({ filteredConstactsData, handleContactsDownload }) => {
   )
 }
 
-export default ContactsDisplay;
+export default ContactsDisplay

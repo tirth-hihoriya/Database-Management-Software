@@ -4,7 +4,7 @@ const CompanyList = ({ companynotIncluded, copyAllToClipboard }) => {
   return (
     <div className='mt-6'>
       <div className='flex items-center justify-between'>
-        <h5 className='mb-3'>List of companies not in COMPANY database</h5>
+        <h5 className='mb-3'>List of companies not in COMPANY database ({companynotIncluded.length})</h5>
         <button
           className='bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded'
           onClick={copyAllToClipboard}

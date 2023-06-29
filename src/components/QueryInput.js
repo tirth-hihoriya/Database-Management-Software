@@ -10,7 +10,7 @@ const QueryInput = ({
   return (
     <div className='mt-4'>
       <label htmlFor='searchBy' className='block mb-2'>
-        Search by:
+      <h3 className='text-xl font-semibold '>Search by:</h3>
       </label>
       <div className='relative'>
         <select
@@ -18,13 +18,16 @@ const QueryInput = ({
           className={`block border border-gray-300 rounded py-2 px-4 w-full mb-2 focus:outline-none focus:border-blue-500`}
           onChange={handleSelectChange}
         >
-          <option value='' className="text-gray-400"> select dropdown  </option>
+          <option value='' className='text-gray-400'>
+            {' '}
+            select dropdown{' '}
+          </option>
           <option value='companyName'>Company Name</option>
-          <option value='industry'>Industry</option>
-          <option value='type'>Type category</option>
+          <option value='industry'>Company Industry</option>
+          <option value='type'>Investor Type</option>
         </select>
         <label htmlFor='query' className='block mb-2'>
-          Query:
+        <h3 className='text-xl font-semibold'>Query:</h3>
         </label>
         <textarea
           className='block border border-gray-300 rounded py-2 px-4 w-full mb-2 h-32'
