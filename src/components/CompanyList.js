@@ -1,6 +1,6 @@
 import React from 'react'
 
-const CompanyList = ({ companynotIncluded, copyAllToClipboard }) => {
+const CompanyList = ({ companynotIncluded, suggestedUrlCompany, copyAllToClipboard }) => {
   return (
     <div className='mt-6'>
       <div className='flex items-center justify-between'>
@@ -25,6 +25,9 @@ const CompanyList = ({ companynotIncluded, copyAllToClipboard }) => {
             <th className='bg-gray-200 text-gray-600 px-4 py-2 font-semibold text-sm'>
               Action
             </th>
+            <th className='bg-gray-200 text-gray-600 px-4 py-2 font-semibold text-sm'>
+              URL
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -40,6 +43,15 @@ const CompanyList = ({ companynotIncluded, copyAllToClipboard }) => {
                   Copy
                 </button>
               </td>
+              
+              <td className='border px-4 py-2'>
+                  <button
+                    className='bg-blue-500 hover:bg-blue-600 text-white ' 
+                    onClick={() => window.open(suggestedUrlCompany[index], '_blank')}
+                  >
+                  <img className='h-7 w-7' src={'https://img.freepik.com/premium-vector/globe-icon-with-gradient-purple-effect_197792-4858.jpg'} alt="Search" />
+                  </button>
+                </td>
             </tr>
           ))}
         </tbody>

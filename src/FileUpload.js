@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import axios from 'axios'
-import FileInput from './components/FileInput'
 import QueryInput from './components/QueryInput'
 import DataDisplay from './components/DataDisplay'
 import ContactsDisplay from './components/ContactsDisplay'
@@ -8,34 +7,16 @@ import CompanyList from './components/CompanyList'
 import ContactsCompanyList from './components/ContactsCompanyList'
 
 const FileUpload = () => {
-  const [selectedFile, setSelectedFile] = useState(null)
   const [filteredData, setFilteredData] = useState([])
   const [filteredConstactsData, setFilteredConstactsData] = useState([])
   const [companynotIncluded, setCompanynotIncluded] = useState([])
   const [companynotInContacts, setCompanynotInContacts] = useState([])
+  const [suggestedUrlCompany, setSuggestedUrlCompany] = useState('')
+  const [suggestedUrlContacts, setSuggestedUrlContacts] = useState('')
   const [downloadLink, setDownloadLink] = useState('')
   const [query, setQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
 
-  const handleFileChange = event => {
-    setSelectedFile(event.target.files[0])
-  }
-
-  const handleUpload = () => {
-    const formData = new FormData()
-    formData.append('file', selectedFile)
-
-    axios
-      .post('http://localhost:5000/api/preprocess', formData)
-      .then(response => {
-        setFilteredData(response.data.filteredData)
-        setFilteredConstactsData(response.data.filteredContactsData)
-        setDownloadLink(response.data.downloadLink)
-      })
-      .catch(error => {
-        console.error('Error:', error)
-      })
-  }
 
   const handleCompanyDownload = () => {
     if (downloadLink) {
@@ -114,6 +95,8 @@ const FileUpload = () => {
         setFilteredConstactsData(response.data.filteredContactsData)
         setCompanynotIncluded(response.data.companyNotIncluded)
         setCompanynotInContacts(response.data.companyNotIncludedInContacts)
+        setSuggestedUrlCompany(response.data.suggestedUrlCompany)
+        setSuggestedUrlContacts(response.data.suggestedUrlContacts)
         setDownloadLink('/api/download')
       })
       .catch(error => {
@@ -170,6 +153,7 @@ const FileUpload = () => {
         {companynotIncluded && companynotIncluded.length > 0 ? (
           <CompanyList
             companynotIncluded={companynotIncluded}
+            suggestedUrlCompany={suggestedUrlCompany}
             copyAllToClipboard={copyAllToClipboard}
           />
         ) : (
@@ -179,6 +163,7 @@ const FileUpload = () => {
         {companynotInContacts && companynotInContacts.length > 0 ? (
           <ContactsCompanyList
             companynotInContacts={companynotInContacts}
+            suggestedUrlContacts={suggestedUrlContacts}
             copyAllToClipboard={copyAllToClipboard}
           />
         ) : (

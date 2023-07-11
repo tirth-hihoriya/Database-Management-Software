@@ -1,6 +1,6 @@
 import React from 'react'
 
-const ContactsCompanyList = ({ companynotInContacts, copyAllToClipboard }) => {
+const ContactsCompanyList = ({ companynotInContacts, suggestedUrlContacts, copyAllToClipboard }) => {
   return (
     <div className='mt-6'>
       <div className='flex items-center justify-between'>
@@ -25,14 +25,17 @@ const ContactsCompanyList = ({ companynotInContacts, copyAllToClipboard }) => {
             <th className='bg-gray-200 text-gray-600 px-4 py-2 font-semibold text-sm'>
               Action
             </th>
+            <th className='bg-gray-200 text-gray-600 px-4 py-2 font-semibold text-sm'>
+              URL
+            </th>
           </tr>
         </thead>
         <tbody>
           {companynotInContacts.map((name, index) => (
             <tr key={index}>
-              <td className='border px-4 py-2'>{index + 1}</td>
-              <td className='border px-4 py-2'>{name}</td>
-              <td className='border px-4 py-2'>
+              <td className='border px-2 py-1'>{index + 1}</td>
+              <td className='border px-2 py-1'>{name}</td>
+              <td className='border px-2 py-1'>
                 <button
                   className='bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded'
                   onClick={() => navigator.clipboard.writeText(name)}
@@ -40,6 +43,14 @@ const ContactsCompanyList = ({ companynotInContacts, copyAllToClipboard }) => {
                   Copy
                 </button>
               </td>
+              <td className='border px-4 py-2'>
+                  <button
+                    className='bg-blue-500 hover:bg-blue-600 text-white ' 
+                    onClick={() => window.open(suggestedUrlContacts[index], '_blank')}
+                  >
+                  <img className='h-7 w-7' src={'https://img.freepik.com/premium-vector/globe-icon-with-gradient-purple-effect_197792-4858.jpg'} alt="Search" />
+                  </button>
+                </td>
             </tr>
           ))}
         </tbody>

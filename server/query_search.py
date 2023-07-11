@@ -1,6 +1,26 @@
 from flask import jsonify
 import pandas as pd
 import re
+import json
+import requests
+
+
+def get_suggested_url(company_name):
+    url = "https://autocomplete.clearbit.com/v1/companies/suggest?query=" + company_name
+    text = requests.get(url).text
+    json_text = json.loads(text)
+    try:
+        final_url = 'https://www.' + json_text[0]['domain']
+    except:
+        final_url = 'https://www.google.com/search?q=' + company_name
+    return final_url
+
+def get_suggested_url_list(company_name_list):
+    url_list = []
+    for company_name in company_name_list:
+        url_list.append(get_suggested_url(company_name))
+    return url_list
+
 
 def cleaned_query(input_text):
     """
@@ -91,14 +111,22 @@ def query_company(query, file_paths):
     pattern1 = '|'.join([re.escape(name) for name in filtered_company_names])
     not_included_company_names = [name for name in query if not re.search(pattern1, name, re.IGNORECASE)]
 
+
+    
+
     pattern2 = '|'.join([re.escape(name) for name in filtered_company_names_inContacts])
     not_included_company_names_inContacts = [name for name in query if not re.search(pattern2, name, re.IGNORECASE)]
+
+    suggestedUrlCompany = get_suggested_url_list(not_included_company_names)
+    suggestedUrlContacts = get_suggested_url_list(not_included_company_names_inContacts)
 
     return jsonify({
         'filteredData': filteredCompanies_df.to_dict('records'),
         'filteredContactsData': filteredContacts_df.to_dict('records'),
         'companyNotIncluded': not_included_company_names,
-        'companyNotIncludedInContacts': not_included_company_names_inContacts
+        'companyNotIncludedInContacts': not_included_company_names_inContacts,
+        'suggestedUrlCompany': suggestedUrlCompany,
+        'suggestedUrlContacts': suggestedUrlContacts
     })
 
 def query_industry(query, file_paths):
@@ -160,7 +188,9 @@ def query_industry(query, file_paths):
         'filteredData': filteredCompanies_df.to_dict('records'),
         'filteredContactsData': filteredContacts_df.to_dict('records'),
         'companyNotIncluded': [],
-        'companyNotIncludedInContacts': []
+        'companyNotIncludedInContacts': [],
+           'suggestedUrlCompany': [],
+        'suggestedUrlContacts': []
     })
 
 
@@ -211,5 +241,7 @@ def query_type(query, file_paths):
         'filteredData': filteredCompanies_df.to_dict('records'),
         'filteredContactsData': filteredContacts_df.to_dict('records'),
         'companyNotIncluded': [],
-        'companyNotIncludedInContacts': []
+        'companyNotIncludedInContacts': [],
+           'suggestedUrlCompany': [],
+        'suggestedUrlContacts': []
     })
