@@ -76,6 +76,8 @@ const FileUpload = () => {
     switch (selectedCategory) {
       case 'companyName':
         return 'Enter list of company names'
+      case 'url':
+        return 'Enter list of company URL or Links'
       case 'industry':
         return 'Enter industry name (e.g. Fin Tech, Real Estate, Health, Blockchain/Crypto, etc.)'
       case 'type':

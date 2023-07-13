@@ -23,6 +23,7 @@ const QueryInput = ({
             select dropdown{' '}
           </option>
           <option value='companyName'>Company Name</option>
+          <option value='url'>Company URL/Link</option>
           <option value='industry'>Company Industry</option>
           <option value='type'>Investor Type</option>
         </select>
