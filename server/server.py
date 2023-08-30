@@ -7,9 +7,19 @@ import random
 import string
 import re
 from query_search import cleaned_query, search_query
+from flask_mail import Mail, Message
+
 
 app = Flask(__name__)
 CORS(app)
+
+app.config['MAIL_SERVER']='smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USERNAME'] = 'Edge196Test@gmail.com'
+app.config['MAIL_PASSWORD'] = 'znclhsgryctwvhgb'
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+mail = Mail(app)
 
 # Define a route for preprocessing the Excel file
 @app.route('/api/preprocess', methods=['POST'])
@@ -77,6 +87,18 @@ def download_contacts_excel():
                          as_attachment=True)
 
     return jsonify({'error': 'File not found!!'})
+
+@app.route('/api/sendEmail', methods=['POST'])
+def send_email():
+    data = request.get_json()
+    #json_string = jsonify(data)
+    print(data)
+    #name = data["f_name"]
+    #print(name)
+    msg = Message(data["sub"], sender = 'rtr.parthkachhadia@gmail.com', recipients = ['rtr.parthkachhadia@gmail.com'])
+    msg.body = data["body"]
+    mail.send(msg)
+    return "Sent"
 
 
 # Run the server
